@@ -1,10 +1,22 @@
 #include <iostream>
 #include <math.h>
+#include <chrono> 
+#include <stdlib.h>
+#include <time.h>
+#include <iomanip>
+#include <omp.h>
 
 int factorial(int i)
 {
     if (i == 0) return 1;
     else return i * factorial(i - 1);
+}
+
+void output(std::chrono::steady_clock::time_point start,
+    std::chrono::steady_clock::time_point end, double res) {
+    double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
+    time_taken *= 1e-9;
+    std::cout << "result: " << res << std::endl << " time : " << std::fixed << time_taken << std::setprecision(9) << " sec" << std::endl;
 }
 
 struct SMO {
@@ -58,7 +70,9 @@ int main()
 
     int n = 10000000;
 
+    auto start = std::chrono::high_resolution_clock::now();
     double res = find_normalizing_factor(smo, n);
+    auto end = std::chrono::high_resolution_clock::now();
 
-    std::cout << res;
+    output(start, end, res);
 }
