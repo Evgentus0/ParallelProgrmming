@@ -2,7 +2,6 @@
 #include <math.h>
 #include <chrono> 
 #include <stdlib.h>
-#include <time.h>
 #include <iomanip>
 #include <omp.h>
 
@@ -16,7 +15,7 @@ void output(std::chrono::steady_clock::time_point start,
     std::chrono::steady_clock::time_point end, double res) {
     double time_taken = std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count();
     time_taken *= 1e-9;
-    std::cout << "result: " << res << std::endl << " time : " << std::fixed << time_taken << std::setprecision(9) << " sec" << std::endl;
+    std::cout << "result: " << res << std::endl << " time : " << time_taken << std::setprecision(12) << " sec" << std::endl;
 }
 
 struct SMO {
@@ -63,16 +62,31 @@ double find_normalizing_factor(SMO* smo, int n) {
     return 1.0 / almostRes;
 }
 
+double find_normalizing_factor_parallel(SMO* smo, int n) {
+    double almostRes = 0;
+    int i;
+#pragma omp parallel for private(i) reduction(+:almostRes) shared(smo, n)
+    for ( i = 0; i <= n; i++) {
+        almostRes += smo[0].getP(i) * smo[1].getP(n - i);
+    }
+
+    return 1.0 / almostRes;
+}
+
 
 int main()
 {
-    SMO* smo = new SMO[2] { SMO(1, 1, 1.000000000123), SMO(1, 1, 0.999952342) };
+    SMO* smo = new SMO[2] { SMO(1, 1, 1.000000000000123), SMO(1, 1, 0.999999952342) };
 
-    int n = 10000000;
+    int n = 1e9;
 
     auto start = std::chrono::high_resolution_clock::now();
-    double res = find_normalizing_factor(smo, n);
+    double res1 = find_normalizing_factor_parallel(smo, n);
     auto end = std::chrono::high_resolution_clock::now();
+    output(start, end, res1);
 
-    output(start, end, res);
+    start = std::chrono::high_resolution_clock::now();
+    double res2 = find_normalizing_factor(smo, n);
+    end = std::chrono::high_resolution_clock::now();
+    output(start, end, res2); 
 }
