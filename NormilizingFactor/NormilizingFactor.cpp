@@ -30,7 +30,7 @@ public:
         mu = 1;
     }
 
-    SMO(double r, double e, double mu) {
+    SMO(int r, double e, double mu) {
         this->r = r;
         this->e = e;
         this->mu = mu;
@@ -78,7 +78,7 @@ int main()
 {
     SMO* smo = new SMO[2] { SMO(1, 1, 1.000000000000123), SMO(1, 1, 0.999999952342) };
 
-    int n = 1e9;
+    int n = 2e8;
 
     auto start = std::chrono::high_resolution_clock::now();
     double res1 = find_normalizing_factor_parallel(smo, n);

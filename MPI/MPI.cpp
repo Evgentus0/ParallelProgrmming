@@ -130,7 +130,7 @@ double parallel_normalizing_factor(int rank, int comm_size, int n, SMO* smo) {
 int main() {   
     SMO* smo = new SMO[2]{ SMO(1, 1, 1.000000000000123), SMO(1, 1, 0.999999952342) };
 
-    int n = 1e9;
+    int n = 2e8;
 
 	int rank, comm_size, t;   
 
