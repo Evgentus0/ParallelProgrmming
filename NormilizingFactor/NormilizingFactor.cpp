@@ -53,24 +53,24 @@ public:
 };
 
 double find_normalizing_factor(SMO* smo, int n) {
-    double almostRes = 0;
+    double reverse_result = 0;
 
     for (int i = 0; i <= n; i++) {
-        almostRes += smo[0].getP(i) * smo[1].getP(n - i);
+        reverse_result += smo[0].getP(i) * smo[1].getP(n - i);
     }
 
-    return 1.0 / almostRes;
+    return 1.0 / reverse_result;
 }
 
 double find_normalizing_factor_parallel(SMO* smo, int n) {
-    double almostRes = 0;
+    double reverse_result = 0;
     int i;
-#pragma omp parallel for private(i) reduction(+:almostRes) shared(smo, n)
+#pragma omp parallel for private(i) reduction(+:reverse_result) shared(smo, n)
     for ( i = 0; i <= n; i++) {
-        almostRes += smo[0].getP(i) * smo[1].getP(n - i);
+        reverse_result += smo[0].getP(i) * smo[1].getP(n - i);
     }
 
-    return 1.0 / almostRes;
+    return 1.0 / reverse_result;
 }
 
 
@@ -78,7 +78,7 @@ int main()
 {
     SMO* smo = new SMO[2] { SMO(1, 1, 1.000000000000123), SMO(1, 1, 0.999999952342) };
 
-    int n = 2e8;
+    int n = 1200000;
 
     auto start = std::chrono::high_resolution_clock::now();
     double res1 = find_normalizing_factor_parallel(smo, n);
